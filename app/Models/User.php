@@ -13,24 +13,31 @@ class User extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable;
 
     /**
+     * Make id to be not increment.
+     */
+    public $incrementing = false;
+
+    /**
+     * Set uuid field as primary key.
+     */
+    protected $primaryKey = 'uuid';
+
+    /**
+     * Set primary key type to string.
+     */
+    protected $keyType = 'string';
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
      */
     protected $fillable = [
+        'uuid',
+        'gender',
         'name',
-        'email',
-        'password',
-    ];
-
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
-    protected $hidden = [
-        'password',
-        'remember_token',
+        'location',
+        'age'
     ];
 
     /**
@@ -39,6 +46,7 @@ class User extends Authenticatable
      * @var array<string, string>
      */
     protected $casts = [
-        'email_verified_at' => 'datetime',
+        'name' => 'json',
+        'location' => 'json'
     ];
 }
