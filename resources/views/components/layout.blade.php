@@ -27,14 +27,6 @@
         </div>
     </div>
 
-    <script>
-        document.getElementById('clearButton').addEventListener('click', function() {
-            document.getElementById('searchForm').reset();
-            document.getElementById('age').value = '';
-            document.getElementById('name').value = '';
-            document.getElementById('dateInput').value = '';
-            document.querySelector('select[name="gender"]').selectedIndex = 0;
-            });
-    </script>
+    @stack('scripts')
 </body>
 </html>
