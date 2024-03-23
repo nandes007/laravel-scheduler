@@ -49,4 +49,18 @@ class User extends Authenticatable
         'name' => 'json',
         'location' => 'json'
     ];
+
+    protected $appends = [
+        'full_name'
+    ];
+
+    public function getFullNameAttribute()
+    {
+        $title = $this->name['title'] ?? '';
+        $firstName = $this->name['first'] ?? '';
+        $lastName = $this->name['last'] ?? '';
+        $fullName = $title . '. ' . $firstName . ' ' . $lastName;
+ 
+        return $fullName;
+    }
 }
