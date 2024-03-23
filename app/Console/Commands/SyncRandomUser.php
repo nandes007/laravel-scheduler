@@ -3,9 +3,9 @@
 namespace App\Console\Commands;
 
 use App\Models\User;
+use Carbon\Carbon;
 use GuzzleHttp\Client;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
 use Psr\Http\Message\StreamInterface;
 
@@ -77,7 +77,6 @@ class SyncRandomUser extends Command
             }
 
             try {
-                DB::beginTransaction();
                 $user = User::where('uuid', $userUuid)->first();
                 if (empty($user)) {
                     $user = new User();
@@ -90,17 +89,15 @@ class SyncRandomUser extends Command
                 $user->age = $result['dob']['age'] ?? NULL;
                 $user->save();
                 
-                $this->syncTotalGenderToRedis();
-                DB::commit();
                 $this->info(sprintf($this::SUCCESS_MESSAGE, $user->uuid, ++$index, $totalRow));
                 $totalRowCreated++;
             } catch (\Throwable $th) {
-                DB::rollBack();
                 $this->error('Failed to created user : ', $th->getMessage());
                 return;
             }
         }
 
+        $this->syncTotalGenderToRedis();
         $this->info("Total user successfully to created $totalRowCreated of $totalRow");
     }
 
@@ -165,8 +162,16 @@ class SyncRandomUser extends Command
      */
     protected function syncTotalGenderToRedis()
     {
-        $maleCount = User::select('id')->where('gender', 'male')->count();
-        $femaleCount = User::select('id')->where('gender', 'female')->count();
+        $syncDate = Carbon::now()->format('Y-m-d');
+        $maleCount = User::select('id')
+                ->where('gender', 'male')
+                ->whereDate('created_at', $syncDate)
+                ->count();
+
+        $femaleCount = User::select('id')
+                ->where('gender', 'female')
+                ->whereDate('created_at', $syncDate)
+                ->count();
 
         // Increment male count in Redis
         Redis::hincrby('hourly_record', 'male:count', $maleCount);

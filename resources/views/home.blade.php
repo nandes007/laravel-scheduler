@@ -7,12 +7,12 @@
 
     <div class="search-form">
         <form action="{{ route('home') }}" method="GET">
-            <input type="text" name="search" placeholder="Search...">
+            <input type="text" name="search" placeholder="Search..." value="{{ request('search') }}">
             <select name="filter">
-                <option value="name">Name</option>
-                <option value="age">Age</option>
-                <option value="gender">Gender</option>
-                <option value="created_at">Created At</option>
+                <option value="name" {{ request('filter') == 'name' ? 'selected' : '' }}>Name</option>
+                <option value="age" {{ request('filter') == 'age' ? 'selected' : '' }}>Age</option>
+                <option value="gender" {{ request('filter') == 'gender' ? 'selected' : '' }}>Gender</option>
+                <option value="created_at" {{ request('filter') == 'created_at' ? 'selected' : '' }}>Created At</option>
             </select>
             <button type="submit">Search</button>
         </form>
@@ -52,7 +52,7 @@
             @if ($users->onFirstPage())
                 <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
             @else
-                <li class="page-item"><a href="{{ $users->previousPageUrl() }}" class="page-link" rel="prev">&laquo;</a></li>
+                <li class="page-item"><a href="{{ $users->appends(request()->query())->previousPageUrl() }}" class="page-link" rel="prev">&laquo;</a></li>
             @endif
 
             @foreach ($users->getUrlRange(1, $users->lastPage()) as $page => $url)
@@ -64,7 +64,7 @@
             @endforeach
 
             @if ($users->hasMorePages())
-                <li class="page-item"><a href="{{ $users->nextPageUrl() }}" class="page-link" rel="next">&raquo;</a></li>
+                <li class="page-item"><a href="{{ $users->appends(request()->query())->nextPageUrl() }}" class="page-link" rel="next">&raquo;</a></li>
             @else
                 <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
             @endif

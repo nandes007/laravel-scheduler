@@ -46,7 +46,13 @@ class IUserRepository implements UserRepository
      */
     public function find(string $uuid): ?User
     {
-        return User::select('uuid')->where('uuid', $uuid)->first();
+        return User::select([
+            'uuid',
+            'name',
+            'age',
+            'gender',
+            'created_at'
+        ])->where('uuid', $uuid)->first();
     }
 
     /**
