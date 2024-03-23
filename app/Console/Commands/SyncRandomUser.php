@@ -169,9 +169,9 @@ class SyncRandomUser extends Command
         $femaleCount = User::select('id')->where('gender', 'female')->count();
 
         // Increment male count in Redis
-        Redis::hincrby('male:count', 'male', $maleCount);
+        Redis::hincrby('hourly_record', 'male:count', $maleCount);
 
         // Increment female count in Redis
-        Redis::hincrby('female:count', 'female', $femaleCount);
+        Redis::hincrby('hourly_record', 'female:count', $femaleCount);
     }
 }
