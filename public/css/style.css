@@ -203,6 +203,7 @@ th {
 }
 
 .search-form input[type="text"],
+.search-form input[type="number"],
 .search-form select {
     padding: 8px;
     margin-right: 10px;
@@ -217,8 +218,21 @@ th {
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    margin-left: 20px;
 }
 
 .search-form button:hover {
-    background-color: #0056b3;
+    background-color: #0056b3;;
+}
+
+input[type="date"] {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+input[type="date"]:focus {
+    outline: none;
+    border-color: dodgerblue;
 }

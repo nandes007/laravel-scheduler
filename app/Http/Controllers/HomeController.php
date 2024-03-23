@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\ValidationException;
 use App\Service\DailyRecordService;
 use App\Service\UserService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -19,8 +21,20 @@ class HomeController extends Controller
 
     public function index(Request $request)
     {
-        $users = $this->userService->getUsers($request);
-        $totalUsers = $this->userService->countUser();
+        try {
+            $users = $this->userService->getUsers($request);
+            $totalUsers = $this->userService->countUser();
+        } catch(ValidationException $v) {
+            return redirect()->back()->with([
+                'error' => true,
+                'error_message' => $v->getMessage()
+            ]);
+        } catch (\Exception $e) {
+            return redirect()->back()->with([
+                'error' => true,
+                'error_message' => 'Sorry, something went wrong'
+            ]);
+        }
 
         return view('home', [
             'users' => $users,
@@ -43,10 +57,15 @@ class HomeController extends Controller
             $this->userService->deleteUser($user);
 
             return redirect()->back()->with('success_message', 'Successfully deleted user');
+        } catch(ValidationException $v) {
+            return redirect()->back()->with([
+                'error' => true,
+                'error_message' => $v->getMessage()
+            ]);
         } catch (\Exception $e) {
             return redirect()->back()->with([
                 'error' => true,
-                'error_message' => $e->getMessage()
+                'error_message' => 'Sorry, something went wrong'
             ]);
         }
     }

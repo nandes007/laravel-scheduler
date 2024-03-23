@@ -2,9 +2,10 @@
 
 namespace App\Service;
 
+use App\Exceptions\ValidationException;
 use App\Models\User;
 use App\Repository\UserRepository;
-use Exception;
+use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
@@ -26,6 +27,14 @@ class IUserService implements UserService
      */
     public function getUsers(Request $request): LengthAwarePaginator
     {
+        if (!empty($request->date)) {
+            try {
+                $dateFormatted = Carbon::createFromFormat('Y-m-d', $request->date)->format('Y-m-d');
+                $request->merge(['date_formatted' => $dateFormatted]);
+            } catch (\Exception $e) {
+                throw new ValidationException("Invalid date format", 400);
+            }
+        }
         return $this->userRepository->get($request);
     }
 
@@ -49,7 +58,7 @@ class IUserService implements UserService
     {
         $user = $this->userRepository->find($uuid);
         if (empty($user)) {
-            throw new Exception('User not found', 400);
+            throw new ValidationException('User not found', 400);
         }
 
         return $user;

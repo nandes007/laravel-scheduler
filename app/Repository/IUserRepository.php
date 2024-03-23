@@ -17,15 +17,34 @@ class IUserRepository implements UserRepository
      */
     public function get(Request $request): LengthAwarePaginator
     {
-        $user = User::select([
+        $users = User::select([
             'uuid',
             'name',
             'age',
             'gender',
             'created_at'
-        ])->paginate(10);
+        ]);
 
-        return $user;
+        if (!empty($request->name)) {
+            $users = $users->where('name->first', 'like', '%'.$request->input('name').'%')
+                        ->orWhere('name->last', 'like', '%'.$request->input('name').'%');
+        }
+
+        if (!empty($request->age)) {
+            $users = $users->where('age', $request->age);
+        }
+
+        if (!empty($request->gender)) {
+            $users = $users->where('gender', $request->gender);
+        }
+
+        if (!empty($request->date_formatted)) {
+            $users = $users->whereDate('created_at', $request->date_formatted);
+        }
+
+        $users = $users->paginate(20);
+
+        return $users;
     }
 
     /**

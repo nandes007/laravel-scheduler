@@ -6,15 +6,17 @@
     </div>
 
     <div class="search-form">
-        <form action="{{ route('home') }}" method="GET">
-            <input type="text" name="search" placeholder="Search..." value="{{ request('search') }}">
-            <select name="filter">
-                <option value="name" {{ request('filter') == 'name' ? 'selected' : '' }}>Name</option>
-                <option value="age" {{ request('filter') == 'age' ? 'selected' : '' }}>Age</option>
-                <option value="gender" {{ request('filter') == 'gender' ? 'selected' : '' }}>Gender</option>
-                <option value="created_at" {{ request('filter') == 'created_at' ? 'selected' : '' }}>Created At</option>
+        <form id="searchForm" action="{{ route('home') }}" method="GET">
+            <input type="text" id="name" name="name" placeholder="Type Name" value="{{ request('name') }}">
+            <input type="number" id="age" name="age" placeholder="Type Age" value="{{ request('age') }}">
+            <select name="gender">
+                <option value="" selected>Select Gender</option>
+                <option value="male" {{ request('gender') == 'male' ? 'selected' : '' }}>Male</option>
+                <option value="female" {{ request('gender') == 'female' ? 'selected' : '' }}>Female</option>
             </select>
+            <input type="date" id="dateInput" name="date" placeholder="Type Date" value="{{ request('date') }}">
             <button type="submit">Search</button>
+            <button type="button" id="clearButton">Clear</button>
         </form>
     </div>
 
@@ -47,6 +49,9 @@
             @endforeach
         </tbody>
     </table>
+    <!-- <div class="pagination">
+        {!! $users->appends($_GET)->links() !!}
+    </div> -->
     <div class="pagination">
         <ul class="pagination-list">
             @if ($users->onFirstPage())
