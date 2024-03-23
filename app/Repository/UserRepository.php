@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Models\User;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 
@@ -14,7 +15,7 @@ interface UserRepository
      * @param Request $request
      * @return Collection
      */
-    public function get(Request $request): Collection;
+    public function get(Request $request): LengthAwarePaginator;
 
     /**
      * Retrieve total users interface.

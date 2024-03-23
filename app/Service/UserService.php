@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Models\User;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 
@@ -14,7 +15,7 @@ interface UserService
      * @param Request $request
      * @return Collection
      */
-    public function getUsers(Request $request): Collection;
+    public function getUsers(Request $request): LengthAwarePaginator;
 
     /**
      * Retrieve total users interface.

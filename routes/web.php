@@ -17,6 +17,6 @@ use Illuminate\Support\Facades\Route;
 // Route::get('/', function () {
 //     return view('welcome');
 // });
-Route::get('/', [HomeController::class, 'index'])->name('dashboard');
+Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/reports', [HomeController::class, 'reports'])->name('reports');
 Route::delete('{uuid}', [HomeController::class, 'destroy'])->name('users.destroy');

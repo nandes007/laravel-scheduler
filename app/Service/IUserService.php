@@ -4,6 +4,8 @@ namespace App\Service;
 
 use App\Models\User;
 use App\Repository\UserRepository;
+use Exception;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 
@@ -22,7 +24,7 @@ class IUserService implements UserService
      * @param Request $request
      * @return Collection
      */
-    public function getUsers(Request $request): Collection
+    public function getUsers(Request $request): LengthAwarePaginator
     {
         return $this->userRepository->get($request);
     }
@@ -45,7 +47,12 @@ class IUserService implements UserService
      */
     public function findUser(string $uuid): ?User
     {
-        return $this->userRepository->find($uuid);
+        $user = $this->userRepository->find($uuid);
+        if (empty($user)) {
+            throw new Exception('User not found', 400);
+        }
+
+        return $user;
     }
 
     /**
