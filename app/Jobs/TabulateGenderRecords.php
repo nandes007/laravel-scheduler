@@ -1,33 +1,36 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Jobs;
 
 use App\Models\DailyRecord;
 use App\Models\User;
 use Carbon\Carbon;
-use Illuminate\Console\Command;
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Redis;
 
-class TabulateDailyRecords extends Command
+class TabulateGenderRecords implements ShouldQueue
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'app:tabulate-daily-records';
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
-     * The console command description.
+     * Create a new job instance.
      *
-     * @var string
+     * @return void
      */
-    protected $description = 'Command description';
+    public function __construct()
+    {
+        //
+    }
 
     /**
-     * Execute the console command.
+     * Execute the job.
      *
-     * @return int
+     * @return void
      */
     public function handle()
     {
@@ -48,7 +51,7 @@ class TabulateDailyRecords extends Command
 
         // Store the daily records in the database
         DailyRecord::create([
-            'date' => Carbon::today(),
+            'date' => Carbon::now()->format('Y-m-d'),
             'male_count' => $maleCount,
             'female_count' => $femaleCount,
             'male_avg_age' => $maleAverageAge,

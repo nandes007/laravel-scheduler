@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Jobs\TabulateGenderRecords;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -18,6 +19,7 @@ class Kernel extends ConsoleKernel
         // $schedule->command('inspire')->hourly();
 
         $schedule->command('app:sync-random-user')->hourly()->withoutOverlapping();
+        $schedule->job(new TabulateGenderRecords)->dailyAt('23:59');
     }
 
     /**

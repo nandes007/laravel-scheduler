@@ -18,8 +18,8 @@ return new class extends Migration
             $table->date('date');
             $table->integer('male_count')->default(0);
             $table->integer('female_count')->default(0);
-            $table->integer('male_avg_age')->default(0);
-            $table->integer('female_avg_age')->default(0);
+            $table->decimal('male_avg_age', 10, 2)->default(0);
+            $table->decimal('female_avg_age', 10, 2)->default(0);
             $table->timestamps();
         });
     }
