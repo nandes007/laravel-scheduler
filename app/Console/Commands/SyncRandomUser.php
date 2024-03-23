@@ -5,6 +5,8 @@ namespace App\Console\Commands;
 use App\Models\User;
 use GuzzleHttp\Client;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redis;
 use Psr\Http\Message\StreamInterface;
 
 class SyncRandomUser extends Command
@@ -75,6 +77,7 @@ class SyncRandomUser extends Command
             }
 
             try {
+                DB::beginTransaction();
                 $user = User::where('uuid', $userUuid)->first();
                 if (empty($user)) {
                     $user = new User();
@@ -87,10 +90,12 @@ class SyncRandomUser extends Command
                 $user->age = $result['dob']['age'] ?? NULL;
                 $user->save();
                 
+                $this->syncTotalGenderToRedis();
+                DB::commit();
                 $this->info(sprintf($this::SUCCESS_MESSAGE, $user->uuid, ++$index, $totalRow));
                 $totalRowCreated++;
             } catch (\Throwable $th) {
-                dd($th->getMessage());
+                DB::rollBack();
                 $this->error('Failed to created user : ', $th->getMessage());
                 return;
             }
@@ -151,5 +156,22 @@ class SyncRandomUser extends Command
                 'description' => $location["timezone"]["description"] ?? ''
             ]
         ];
+    }
+
+    /**
+     * Sync total gender loaded.
+     * 
+     * @return void
+     */
+    protected function syncTotalGenderToRedis()
+    {
+        $maleCount = User::select('id')->where('gender', 'male')->count();
+        $femaleCount = User::select('id')->where('gender', 'female')->count();
+
+        // Increment male count in Redis
+        Redis::hincrby('male:count', 'male', $maleCount);
+
+        // Increment female count in Redis
+        Redis::hincrby('female:count', 'female', $femaleCount);
     }
 }
