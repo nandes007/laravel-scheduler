@@ -32,26 +32,30 @@
             </tr>
         </thead>
         <tbody>
+            @if ($users->isEmpty())
+                 <tr>
+                    <td colspan="5">No users found</td>
+                </tr> 
+                
+            @else
             @foreach ($users as $user)
-            <tr>
-                <td>{{ $user->full_name }}</td>
-                <td>{{ $user->age }}</td>
-                <td>{{ $user->gender }}</td>
-                <td>{{ $user->created_at }}</td>
-                <td class="actions">
-                    <form action="{{ route('users.destroy', ['uuid' => $user->uuid]) }}" method="POST">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-danger">Delete</button>
-                    </form>
-                </td>
-            </tr>
-            @endforeach
+                    <tr>
+                        <td>{{ $user->full_name }}</td>
+                        <td>{{ $user->age }}</td>
+                        <td>{{ $user->gender }}</td>
+                        <td>{{ $user->created_at }}</td>
+                        <td class="actions">
+                            <form action="{{ route('users.destroy', ['uuid' => $user->uuid]) }}" method="POST">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                @endforeach
+            @endif
         </tbody>
     </table>
-    <!-- <div class="pagination">
-        {!! $users->appends($_GET)->links() !!}
-    </div> -->
     <div class="pagination">
         <ul class="pagination-list">
             @if ($users->onFirstPage())
