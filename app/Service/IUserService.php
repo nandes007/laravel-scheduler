@@ -6,6 +6,7 @@ use App\Exceptions\ValidationException;
 use App\Models\User;
 use App\Repository\UserRepository;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
@@ -72,6 +73,10 @@ class IUserService implements UserService
      */
     public function deleteUser(User $user)
     {
-        return $this->userRepository->delete($user);
+        try {
+            $this->userRepository->delete($user);
+        } catch (\Exception $e) {
+            throw new Exception('Sorry, something went wrong', 500);
+        }
     }
 }
