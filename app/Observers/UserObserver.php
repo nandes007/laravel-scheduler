@@ -44,7 +44,7 @@ class UserObserver
         $genderAverageAge = $gender.'_avg_age';
         $genderCount = $gender.'_count';
 
-        if (in_array($gender, ['male', 'female'])) {
+        if (in_array($gender, ['male', 'female']) && !empty($dailyRecord)) {
             $newAverageAge = User::where('gender', $gender)
                     ->whereDate('created_at', $date)
                     ->avg('age');

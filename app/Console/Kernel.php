@@ -16,7 +16,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('app:sync-random-user')->hourly()->withoutOverlapping();
+        // $schedule->command('app:sync-random-user')->hourly()->withoutOverlapping();
         $schedule->job(new TabulateGenderRecords)->dailyAt('23:59');
     }
 
