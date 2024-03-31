@@ -34,31 +34,40 @@ class TabulateGenderRecords implements ShouldQueue
      */
     public function handle()
     {
-        $now = Carbon::now()->format('Y-m-d');
+        $pattern = '*';
+        $cursor = null;
+        do {
+            [$cursor, $keys] = Redis::scan($cursor, 'MATCH', $pattern);
+            sort($keys);
+            foreach ($keys as $key) {
+                $explodedKey = explode('_', $key);
+                $dateKey = end($explodedKey);
+                try {
+                    $dateKeyFormatted = Carbon::createFromFormat('Y-m-d', $dateKey)->format('Y-m-d');
+                    $maleCount = (int) Redis::hget($dateKey, 'male:count');
+                    $femaleCount = (int) Redis::hget($dateKey, 'female:count');
 
-        // Retrieve gender counts from Redis
-        $maleCount = (int) Redis::hget('hourly_record', 'male:count');
-        $femaleCount = (int) Redis::hget('hourly_record', 'female:count');
+                    $maleAverageAge = User::where('gender', 'male')
+                                ->whereDate('created_at', $dateKeyFormatted)
+                                ->avg('age');
 
-        // Retrieve average ages from the database
-        $maleAverageAge = User::where('gender', 'male')
-                    ->whereDate('created_at', $now)
-                    ->avg('age');
+                    $femaleAverageAge = User::where('gender', 'female')
+                                    ->whereDate('created_at', $dateKeyFormatted)
+                                    ->avg('age');
 
-        $femaleAverageAge = User::where('gender', 'female')
-                        ->whereDate('created_at', $now)
-                        ->avg('age');
+                    DailyRecord::create([
+                        'date' => $dateKeyFormatted,
+                        'male_count' => $maleCount,
+                        'female_count' => $femaleCount,
+                        'male_avg_age' => $maleAverageAge,
+                        'female_avg_age' => $femaleAverageAge,
+                    ]);
 
-        // Store the daily records in the database
-        DailyRecord::create([
-            'date' => Carbon::now()->format('Y-m-d'),
-            'male_count' => $maleCount,
-            'female_count' => $femaleCount,
-            'male_avg_age' => $maleAverageAge,
-            'female_avg_age' => $femaleAverageAge,
-        ]);
-
-        // Clear the gender counts in Redis for the next day
-        Redis::del('hourly_record');
+                    Redis::del($dateKey);
+                }catch(\Exception $e) {
+                    continue;
+                }
+            }
+        } while ($cursor !== '0');
     }
 }
